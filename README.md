@@ -21,8 +21,6 @@ neighbours peeking in from the edges, and a smooth move to the next one.
   Dialogs and extra windows of an app join that app's slot and flip it into windows mode automatically,
   and it flips back when only one window is left. Dialogs never steal a slot of their own.
 
-The full design is in [`docs/CONCEPT.md`](docs/CONCEPT.md).
-
 ## Features
 
 - Animated slot switching with a configurable curve (`expo-out` by default, or your own Bézier)
@@ -35,9 +33,6 @@ The full design is in [`docs/CONCEPT.md`](docs/CONCEPT.md).
 - `wlr-layer-shell` support for bars, launchers and wallpapers (yambar, fuzzel, swaybg, ...)
 - Hot-reloadable TOML config and a small control tool, `monolithctl`
 - Works nested inside another Wayland or X11 session, which is how it is developed
-
-Not built yet: multi-monitor, fullscreen, XWayland, tap-to-click is only in the config for real
-hardware. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for what exists today.
 
 ## Building
 
