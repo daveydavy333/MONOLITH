@@ -1,4 +1,4 @@
-# MONOLITH
+<img width="2555" height="532" alt="logo" src="https://github.com/user-attachments/assets/c645dbb3-2759-49bc-9cd9-c3bc8577c1f9" />
 
 **A slot-strip Wayland compositor, the flagship desktop of [HDXI](#about-hdxi).**
 
@@ -9,7 +9,7 @@ neighbours peeking in from the edges, and a smooth move to the next one.
 > **Early software.** It is usable for testing, but expect rough edges. See
 > [Known issues](#known-issues) before filing a bug.
 
-<!-- screenshot: docs/screenshot.png -->
+<img width="1920" height="1080" alt="screenshot" src="https://github.com/user-attachments/assets/a54c0d64-800a-46d4-9246-4f2725f19408" />
 
 ## Ideas
 
