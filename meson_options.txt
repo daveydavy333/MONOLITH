@@ -1,0 +1,2 @@
+option('testing', type: 'boolean', value: false,
+  description: 'Enable test-only IPC actions (test.drag). Never enable in a release build.')

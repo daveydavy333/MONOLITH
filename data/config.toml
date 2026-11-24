@@ -1,0 +1,155 @@
+# MONOLITH example config  ->  ~/.config/monolith/config.toml
+# Everything here is optional; the values shown are the defaults.
+# Reload without restarting:  monolithctl reload   (or the config.reload keybind)
+
+[general]
+# "Mod" in keybinds. Alt works when running nested inside another desktop
+# (the host desktop usually grabs Super). Use "Super" on real hardware.
+mod = "Alt"
+reduced_motion = false      # master switch: true = no animation at all (slots switch instantly)
+dbus_env = "auto"           # hand WAYLAND_DISPLAY / XDG_CURRENT_DESKTOP to D-Bus-activated services
+                            # (portals: file dialogs, screen capture). "auto" = only when MONOLITH is
+                            # the real session (started from a TTY), "always" also when nested, "never".
+
+[animation]                 # moving between slots
+enabled = true
+duration_ms = 200           # 0 = hard cut
+easing = "expo-out"         # how the move is timed. All of these start at full speed and slow down:
+                            #   "expo-out"  jump, then a long soft landing (the XMB feel; default)
+                            #   "quint-out" / "quart-out" / "cubic-out" / "quad-out" (weaker and weaker)
+                            #   "sine-out"  gentle, nearly linear start; "linear" no easing
+# bezier = [0.05, 0.8, 0.15, 1.0]   # your own curve, like CSS cubic-bezier(x1, y1, x2, y2);
+                            # overrides "easing" (x values must stay between 0 and 1)
+# jump_start = 0.0          # share of the move taken instantly, e.g. 0.2 = 20% at once
+
+[look]                      # how the neighbouring slots are drawn
+tilt_degrees = 45           # turns each neighbour away from you; negative flips the direction,
+                            # 0 = no tilt
+scale = 0.8                 # neighbour size relative to the focused slot (0.3 - 1.0)
+dim = 0.45                  # 0 = unchanged ... 0.9 = nearly black
+perspective = 1.6           # camera distance in screen widths (smaller = stronger perspective)
+                            # tilt 0 + scale 1.0 + dim 0 gives plain flat neighbours with hard cuts
+
+[strip]
+focus_width = 0.72          # focused slot, fraction of output width
+peek = 0.09                 # visible width of each neighbouring slot
+gap = 24                    # minimum px between the focused slot and a neighbour
+edge_gap = 0                # px of space between the focused window and the screen edges, all four sides
+                            # (added to the per-side margins below). The width of the focused window
+                            # is focus_width; the visible slice of each neighbour is peek.
+edge_gap_top = 48           # top/bottom gap on their own (overrides edge_gap for that side; -1 = use edge_gap).
+edge_gap_bottom = 48        # left/right spacing is set by focus_width, so the two are independent
+new_slot_end = "right"      # new slots open at the end of the strip: "right" or "left"
+wrap_around = false         # does slot.next past the last slot wrap to the first?
+close_focus = "left"        # focus after closing a slot: "left", "right" or "recent"
+
+[strip.margin]              # space reserved around the focused slot
+top = 0
+bottom = 0
+left = 0
+right = 0
+
+[windows_mode]
+popups = "auto"             # dialogs/popups join their parent's slot and flip it to
+                            # windows mode ("off" disables all joining)
+same_client = "join"        # any other window opened by an app that already has a slot
+                            # (extra windows, dialogs without a parent) joins that slot too;
+                            # "new" gives every window its own slot
+revert_when_single = true   # leave windows mode again when only one window remains
+                            # (only for slots flipped automatically by a popup)
+default_size = [0.6, 0.6]   # new floating windows, fraction of the slot size
+margin = 16                 # offset of the first floating window from the slot edge
+
+[sound]
+enabled = true
+cooldown_ms = 60            # ignore events arriving sooner than this after the last one
+overlap = "restart"         # previous sound still playing: "allow", "restart" or "drop"
+
+# Each event runs a command (an argument list, no shell; "~" and $VAR are expanded, and a
+# plain string is run through sh -c). [] = silent. An event you leave out plays the bundled
+# sound from /usr/local/share/monolith/sounds, /usr/share/monolith/sounds or
+# ~/.local/share/monolith/sounds if it is installed there.
+[sound.events]
+slot_switch  = ["aplay", "-q", "/usr/local/share/monolith/sounds/switch.wav"]
+slot_open    = ["aplay", "-q", "/usr/local/share/monolith/sounds/open.wav"]
+slot_close   = []
+windows_mode = ["aplay", "-q", "/usr/local/share/monolith/sounds/mode.wav"]
+
+[background]
+color = "#000000"           # solid colour behind everything. For a wallpaper image,
+                            # autostart swaybg (see [[autostart]] below).
+
+# libinput settings, applied to real touchpads / mice (not when MONOLITH runs nested).
+# Remove a line to keep the device default.
+[input.touchpad]
+tap = true                  # tap to click
+tap_and_drag = true
+drag_lock = false
+natural_scroll = false      # content follows your fingers
+disable_while_typing = true
+# accel_speed = 0.0         # -1.0 ... 1.0
+# accel_profile = "adaptive"  # or "flat"
+# click_method = "clickfinger"  # or "button_areas"
+# scroll_method = "two_finger"  # or "edge", "on_button_down"
+# left_handed = false
+# middle_emulation = false
+
+[input.mouse]
+# natural_scroll = false
+# accel_speed = 0.0
+# accel_profile = "adaptive"
+# left_handed = false
+
+[gestures]                  # multi-finger touchpad swipe: the strip follows your fingers
+swipe_fingers = 3           # 0 = off
+swipe_distance = 0.6        # fraction of the screen width that moves the strip by one slot
+swipe_commit = 0.2          # drag this much of a slot to switch; less snaps back
+swipe_natural = true        # strip follows the fingers (false = reversed)
+
+[cursor]
+theme = ""                  # "" = default theme
+size = 24
+
+[keyboard]                  # applied when the keyboard is detected (restart to change)
+layout = ""                 # e.g. "us", "de"
+variant = ""
+options = ""
+repeat_rate = 30
+repeat_delay = 300
+
+# Keybinds. Format: "Mods+Key" = "action". Your entries are added on top of the
+# built-in defaults (the ones below), and yours win on a clash.
+# Actions: slot.next  slot.prev  slot.recent  slot.goto N  slot.swap N
+#          slot.move-left  slot.move-right  windows-mode.toggle  window.close
+#          exec COMMAND  config.reload  quit
+[keybinds]
+"Mod+Right"       = "slot.next"
+"Mod+Left"        = "slot.prev"
+"Mod+Tab"         = "slot.recent"
+"Mod+Shift+Right" = "slot.move-right"
+"Mod+Shift+Left"  = "slot.move-left"
+"Mod+W"           = "windows-mode.toggle"
+"Mod+Shift+Q"     = "window.close"
+"Mod+Shift+R"     = "config.reload"
+"Mod+Shift+E"     = "quit"
+"Mod+Return"      = "exec foot"
+"Mod+D"           = "exec fuzzel"
+# In windows mode: Mod + left-drag moves a window, Mod + right-drag resizes it
+# (from the nearest corner). Title-bar drags from apps that draw their own work too.
+# Mod+1..9 = slot.goto, Mod+Shift+1..9 = slot.swap (swap places with that slot;
+# a number past the last slot moves the focused slot to the end) are built in.
+
+# Per-app overrides, matched on app_id (shell-style wildcards). First rules win.
+# [[rules]]
+# app_id = "pavucontrol"
+# windows_mode = true
+#
+# [[rules]]                 # e.g. footclient windows share one connection with the foot
+# app_id = "foot"           # server; this keeps each of them in its own slot
+# slot = "new"
+
+# Programs started with the compositor.
+# [[autostart]]
+# command = ["swaybg", "-i", "/home/you/Pictures/wall.png", "-m", "fill"]
+# [[autostart]]
+# command = ["yambar"]
